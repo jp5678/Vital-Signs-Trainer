@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>활력징후 해석 트레이너 | 청암대학교 간호학과</title>
+<style>
+:root {
+  --primary: #2E7D52;
+  --primary-light: #4CAF78;
+  --primary-dark: #1B5E3B;
+  --accent: #FF6B35;
+  --warning: #FFA726;
+  --danger: #EF5350;
+  --bg-main: #F0F7F4;
+  --bg-card: #FFFFFF;
+  --text-main: #1A2E25;
+  --text-sub: #546E5A;
+  --border: #C8E6D4;
+  --shadow: 0 2px 12px rgba(46,125,82,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Noto Sans KR','NanumGothic','Malgun Gothic',sans-serif;background:var(--bg-main);color:var(--text-main);min-height:100vh;display:flex;flex-direction:column}
+
+/* Header */
+.header{background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary) 100%);color:#fff;padding:14px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.header-logo{font-size:12px;opacity:0.85;font-weight:500;line-height:1.4}
+.header-title{font-size:20px;font-weight:700;letter-spacing:-0.5px;text-align:center;flex:1}
+.header-actions{display:flex;gap:8px}
+.btn-settings{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;transition:background 0.2s}
+.btn-settings:hover{background:rgba(255,255,255,0.25)}
+.score-badge{background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600}
+
+/* Tabs */
+.tabs{background:#fff;border-bottom:2px solid var(--border);display:flex;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+.tab{flex:1;padding:14px 8px;text-align:center;cursor:pointer;font-size:14px;font-weight:500;color:var(--text-sub);border-bottom:3px solid transparent;transition:all 0.2s;user-select:none}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700}
+.tab:hover:not(.active){background:var(--bg-main);color:var(--primary)}
+.tab-icon{display:block;font-size:20px;margin-bottom:2px}
+
+/* Main content */
+.main{flex:1;padding:16px;max-width:900px;margin:0 auto;width:100%}
+.mode{display:none}
+.mode.active{display:block}
+
+/* Cards */
+.card{background:var(--bg-card);border-radius:14px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--border)}
+.card-title{font-size:16px;font-weight:700;color:var(--primary-dark);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* Section headers */
+.section-header{font-size:15px;font-weight:600;color:var(--text-main);margin:16px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)}
+
+/* Select */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--text-sub);margin-bottom:6px}
+select,input[type=number],input[type=text],textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;background:#fff;color:var(--text-main);font-family:inherit;transition:border-color 0.2s;outline:none}
+select:focus,input:focus,textarea:focus{border-color:var(--primary)}
+
+/* Slider input */
+.vital-input-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-bottom:12px}
+.vital-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.vital-label{font-size:13px;font-weight:600;color:var(--text-sub)}
+.vital-range-hint{font-size:11px;color:#90A899;background:var(--bg-main);border-radius:6px;padding:2px 8px}
+input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none;cursor:pointer}
+input[type=range]{--thumb-color:var(--primary)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--thumb-color);cursor:pointer;box-shadow:0 1px 6px rgba(0,0,0,0.25);transition:background 0.25s}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--thumb-color);cursor:pointer;border:none;transition:background 0.25s}
+.vital-number{width:72px!important;text-align:center;padding:8px 4px!important;font-weight:700;border-width:2px!important;transition:border-color 0.3s,color 0.3s}
+.vital-number.status-normal{border-color:#66BB6A!important;color:#2E7D32}
+.vital-number.status-borderline{border-color:#FFA726!important;color:#E65100}
+.vital-number.status-abnormal{border-color:#EF5350!important;color:#C62828}
+.vital-row{margin-bottom:14px;padding:12px;border-radius:10px;border:2px solid transparent;transition:background 0.3s,border-color 0.3s}
+.vital-row.status-normal{background:#F1F8F4;border-color:#A5D6A7}
+.vital-row.status-borderline{background:#FFFDE7;border-color:#FFE082}
+.vital-row.status-abnormal{background:#FFF0EE;border-color:#FFCDD2}
+.vital-row.status-default{background:var(--bg-main);border-color:transparent}
+/* vital input row: slider | number | pill */
+.vital-input-row{display:grid;grid-template-columns:1fr 72px auto;gap:8px;align-items:center;margin-bottom:2px}
+/* status pill */
+.vital-pill{display:inline-flex;align-items:center;gap:3px;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;border:1.5px solid;transition:all 0.25s;min-width:54px;justify-content:center}
+.vital-pill.pnormal{background:#E8F5E9;color:#2E7D32;border-color:#A5D6A7}
+.vital-pill.pborderline{background:#FFF8E1;color:#E65100;border-color:#FFE082}
+.vital-pill.pabnormal{background:#FFEBEE;color:#C62828;border-color:#EF9A9A}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 22px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;font-family:inherit}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 2px 8px rgba(46,125,82,0.3)}
+.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn-secondary{background:var(--bg-main);color:var(--primary);border:2px solid var(--primary)}
+.btn-secondary:hover{background:var(--primary);color:#fff}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(255,107,53,0.3)}
+.btn-accent:hover{background:#e55a26}
+.btn-sm{padding:7px 14px;font-size:13px;border-radius:8px}
+.btn-block{width:100%}
+
+/* Status badges */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.badge-normal{background:#E8F5E9;color:#2E7D32}
+.badge-borderline{background:#FFF8E1;color:#F57F17}
+.badge-abnormal{background:#FFEBEE;color:#C62828}
+
+/* Result cards */
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+@media(min-width:600px){.result-grid{grid-template-columns:repeat(3,1fr)}}
+.result-item{background:var(--bg-card);border-radius:10px;padding:12px;text-align:center;border:2px solid var(--border)}
+.result-item.normal{border-color:#A5D6A7;background:#F1F8E9}
+.result-item.borderline{border-color:#FFE082;background:#FFFDE7}
+.result-item.abnormal{border-color:#EF9A9A;background:#FFEBEE}
+.result-vital-name{font-size:11px;font-weight:600;color:var(--text-sub);margin-bottom:4px}
+.result-vital-value{font-size:20px;font-weight:700;margin-bottom:4px}
+.result-vital-status{font-size:12px}
+.status-icon{font-size:18px}
+
+/* Clinical interpretation box */
+.interpretation-box{background:linear-gradient(135deg,#E8F5EE,#F0FFF4);border:2px solid var(--primary-light);border-radius:12px;padding:16px;margin-bottom:16px}
+.interpretation-title{font-size:14px;font-weight:700;color:var(--primary-dark);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.interpretation-text{font-size:14px;line-height:1.7;color:var(--text-main)}
+
+.intervention-list{list-style:none;padding:0}
+.intervention-list li{padding:8px 12px;margin-bottom:6px;background:#fff;border-radius:8px;border-left:4px solid var(--primary);font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:8px}
+.intervention-list li::before{content:"▶";color:var(--primary);font-size:11px;margin-top:2px;flex-shrink:0}
+
+/* Scenario mode */
+.scenario-card{background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;border-radius:14px;padding:20px;margin-bottom:16px}
+.scenario-title{font-size:18px;font-weight:700;margin-bottom:6px}
+.scenario-meta{font-size:13px;opacity:0.85;margin-bottom:12px}
+.scenario-desc{font-size:14px;line-height:1.6;background:rgba(255,255,255,0.1);border-radius:10px;padding:12px}
+
+.vitals-display{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+@media(min-width:500px){.vitals-display{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:700px){.vitals-display{grid-template-columns:repeat(4,1fr)}}
+.vital-card{background:var(--bg-card);border-radius:12px;padding:14px 10px;text-align:center;border:2px solid var(--border);transition:all 0.2s}
+.vital-card-name{font-size:11px;font-weight:600;color:var(--text-sub);margin-bottom:4px}
+.vital-card-value{font-size:22px;font-weight:800;color:var(--text-main);margin-bottom:2px}
+.vital-card-unit{font-size:10px;color:#90A899}
+.vital-card.answered-normal{border-color:#66BB6A;background:#F1F8E9}
+.vital-card.answered-borderline{border-color:#FFA726;background:#FFF8E1}
+.vital-card.answered-abnormal{border-color:#EF5350;background:#FFEBEE}
+
+.classification-btns{display:flex;gap:6px;margin-top:8px;justify-content:center}
+.cls-btn{padding:5px 10px;border:2px solid;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;background:transparent;font-family:inherit}
+.cls-btn.normal{border-color:#66BB6A;color:#2E7D32}
+.cls-btn.normal.selected,
+.cls-btn.normal:hover{background:#66BB6A;color:#fff}
+.cls-btn.borderline{border-color:#FFA726;color:#E65100}
+.cls-btn.borderline.selected,
+.cls-btn.borderline:hover{background:#FFA726;color:#fff}
+.cls-btn.abnormal{border-color:#EF5350;color:#C62828}
+.cls-btn.abnormal.selected,
+.cls-btn.abnormal:hover{background:#EF5350;color:#fff}
+.cls-btn.correct{animation:correctPulse 0.4s ease}
+.cls-btn.incorrect{animation:incorrectShake 0.4s ease}
+@keyframes correctPulse{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes incorrectShake{0%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}100%{transform:translateX(0)}}
+
+.feedback-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;justify-content:center;align-items:center;padding:20px}
+.feedback-overlay.show{display:flex}
+.feedback-modal{background:#fff;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto}
+.feedback-modal h3{font-size:18px;font-weight:700;margin-bottom:12px;color:var(--primary-dark)}
+
+/* Score display */
+.score-board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.score-item{background:var(--bg-card);border-radius:12px;padding:14px;text-align:center;border:2px solid var(--border)}
+.score-number{font-size:28px;font-weight:800;color:var(--primary)}
+.score-label{font-size:11px;color:var(--text-sub);font-weight:500}
+
+/* Progress bar */
+.progress-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary-light),var(--primary));border-radius:4px;transition:width 0.5s}
+
+/* Reference table */
+.ref-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.ref-tab{padding:7px 14px;background:var(--bg-main);border:2px solid var(--border);border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-sub);transition:all 0.2s}
+.ref-tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.ref-content{display:none}
+.ref-content.active{display:block}
+
+.ref-table{width:100%;border-collapse:collapse;font-size:13px}
+.ref-table th{background:var(--primary);color:#fff;padding:10px 8px;text-align:center;font-weight:600}
+.ref-table td{padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)}
+.ref-table tr:nth-child(even) td{background:#F9FFFC}
+.ref-table .highlight{font-weight:700;color:var(--primary-dark)}
+
+/* AI intervention input */
+.ai-section{margin-top:16px;border:2px dashed var(--primary-light);border-radius:12px;padding:16px;background:linear-gradient(135deg,#F0FFF4,#E8F5EE)}
+.ai-section-title{font-size:14px;font-weight:700;color:var(--primary-dark);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ai-result{margin-top:12px;padding:14px;background:#fff;border-radius:10px;border:1px solid var(--primary-light);font-size:13px;line-height:1.7;white-space:pre-wrap;display:none}
+.ai-result.show{display:block}
+.ai-loading{text-align:center;color:var(--text-sub);padding:12px;display:none}
+.ai-loading.show{display:block}
+.ai-score-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-weight:700;font-size:16px;margin-bottom:8px}
+
+/* Settings modal */
+.settings-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;justify-content:center;align-items:center;padding:20px}
+.settings-overlay.show{display:flex}
+.settings-modal{background:#fff;border-radius:16px;padding:24px;max-width:420px;width:100%}
+.settings-modal h3{font-size:18px;font-weight:700;color:var(--primary-dark);margin-bottom:6px}
+.settings-modal p{font-size:13px;color:var(--text-sub);margin-bottom:16px;line-height:1.5}
+.api-key-input{font-size:13px!important;font-family:monospace!important}
+.settings-note{font-size:11px;color:#90A899;margin-top:8px;line-height:1.5}
+
+/* Scenario navigation */
+.scenario-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px}
+.scenario-counter{font-size:14px;font-weight:600;color:var(--text-sub)}
+.scenario-list-btn{background:var(--bg-main);border:2px solid var(--border);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-main)}
+.scenario-list-btn:hover{border-color:var(--primary);color:var(--primary)}
+
+/* Scenario list */
+.scenario-list-grid{display:grid;grid-template-columns:1fr;gap:8px}
+@media(min-width:500px){.scenario-list-grid{grid-template-columns:repeat(2,1fr)}}
+.scenario-list-item{background:var(--bg-card);border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all 0.2s}
+.scenario-list-item:hover{border-color:var(--primary);background:#F0FFF4}
+.scenario-list-item.done{border-color:#66BB6A;background:#F1F8E9}
+.scenario-list-item .s-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.scenario-list-item .s-meta{font-size:12px;color:var(--text-sub)}
+.scenario-list-item .s-badge{font-size:11px;float:right;padding:2px 8px;border-radius:10px;font-weight:600}
+
+/* Alert box */
+.alert{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:12px;line-height:1.5}
+.alert-info{background:#E3F2FD;border-left:4px solid #2196F3;color:#1565C0}
+.alert-warning{background:#FFF8E1;border-left:4px solid var(--warning);color:#E65100}
+.alert-danger{background:#FFEBEE;border-left:4px solid var(--danger);color:#B71C1C}
+.alert-success{background:#E8F5E9;border-left:4px solid #4CAF50;color:#1B5E20}
+
+/* Footer */
+footer{background:var(--primary-dark);color:rgba(255,255,255,0.7);text-align:center;padding:16px;font-size:12px;line-height:1.6;margin-top:auto}
+footer strong{color:#fff}
+
+/* Divider */
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* Print styles */
+@media print{
+  .tabs,.btn,.header-actions,.classification-btns,.ai-section,.scenario-nav{display:none!important}
+  .mode{display:block!important}
+  body{background:#fff}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  .ref-content{display:block!important}
+  footer{background:#333}
+}
+
+/* Responsive */
+@media(max-width:480px){
+  .header-title{font-size:17px}
+  .result-grid{grid-template-columns:repeat(2,1fr)}
+  .main{padding:12px}
+  .vitals-display{grid-template-columns:repeat(2,1fr)}
+  .score-board{grid-template-columns:repeat(3,1fr)}
+}
+
+/* Animations */
+.fade-in{animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+
+/* NRS scale */
+.nrs-color-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:8px 0 4px}
+.nrs-color-bar .seg-green{flex:4;background:linear-gradient(90deg,#A5D6A7,#66BB6A)}
+.nrs-color-bar .seg-orange{flex:3;background:linear-gradient(90deg,#FFB74D,#FFA726)}
+.nrs-color-bar .seg-red{flex:4;background:linear-gradient(90deg,#EF9A9A,#EF5350)}
+.nrs-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-sub);margin-bottom:6px}
+.nrs-value-display{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;font-size:20px;font-weight:800;border:3px solid;flex-shrink:0}
+.nrs-value-display.lvl-0{border-color:#66BB6A;background:#E8F5E9;color:#2E7D32}
+.nrs-value-display.lvl-1{border-color:#FFA726;background:#FFF8E1;color:#E65100}
+.nrs-value-display.lvl-2{border-color:#EF5350;background:#FFEBEE;color:#C62828}
+.nrs-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+#slider-nrs::-webkit-slider-thumb{background:var(--nrs-thumb,var(--primary))}
+#slider-nrs{--nrs-thumb:var(--primary)}
+
+/* Tooltip */
+.tooltip{position:relative;display:inline-block}
+.tooltip .tooltip-text{display:none;position:absolute;bottom:125%;left:50%;transform:translateX(-50%);background:#333;color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;white-space:nowrap;z-index:50}
+.tooltip:hover .tooltip-text{display:block}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div class="header-logo">청암대학교 간호학과<br>제프리 교수</div>
+    <div class="header-title">활력징후 해석 트레이너</div>
+    <div class="header-actions">
+      <span class="score-badge" id="headerScore">점수: 0</span>
+      <button class="btn-settings" onclick="openSettings()">⚙️ 설정</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(0)" id="tab0">
+    <span class="tab-icon">📝</span>자유입력
+  </div>
+  <div class="tab" onclick="switchTab(1)" id="tab1">
+    <span class="tab-icon">🏥</span>시나리오
+  </div>
+  <div class="tab" onclick="switchTab(2)" id="tab2">
+    <span class="tab-icon">📊</span>참조표
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+<!-- ==================== MODE 1: FREE INPUT ==================== -->
+<div class="mode active" id="mode0">
+  <div class="card fade-in">
+    <div class="card-title">🩺 활력징후 입력</div>
+
+    <div class="form-group">
+      <label class="form-label">연령대 선택</label>
+      <select id="ageGroup" onchange="updateRangeHints()">
+        <option value="신생아">신생아 (0~28일)</option>
+        <option value="영아">영아 (1~12개월)</option>
+        <option value="유아">유아 (1~5세)</option>
+        <option value="학령기">학령기 (6~12세)</option>
+        <option value="청소년">청소년 (13~17세)</option>
+        <option value="성인" selected>성인 (18~64세)</option>
+        <option value="노인">노인 (65세 이상)</option>
+      </select>
+    </div>
+
+    <!-- SBP -->
+    <div class="vital-row status-default" id="row-sbp">
+      <div class="vital-label-row">
+        <span class="vital-label">🩸 수축기 혈압 (SBP)</span>
+        <span class="vital-range-hint" id="hint-sbp">정상: 90~139 mmHg</span>
+      </div>
+      <div class="vital-input-row">
+        <input type="range" id="slider-sbp" min="40" max="250" value="120" step="1" oninput="syncInput('sbp',this.value)">
+        <input type="number" id="input-sbp" class="vital-number" value="120" min="40" max="250" oninput="syncSlider('sbp',this.value)">
+        <span class="vital-pill pnormal" id="pill-sbp">🟢 정상</span>
+      </div>
+    </div>
+
+    <!-- DBP -->
+    <div class="vital-row status-default" id="row-dbp">
+      <div class="vital-label-row">
+        <span class="vital-label">💧 이완기 혈압 (DBP)</span>
+        <span class="vital-range-hint" id="hint-dbp">정상: 60~89 mmHg</span>
+      </div>
+      <div class="vital-input-row">
+        <input type="range" id="slider-dbp" min="20" max="150" value="80" step="1" oninput="syncInput('dbp',this.value)">
+        <input type="number" id="input-dbp" class="vital-number" value="80" min="20" max="150" oninput="syncSlider('dbp',this.value)">
+        <span class="vital-pill pnormal" id="pill-dbp">🟢 정상</span>
+      </div>
+    </div>
+
+    <!-- HR -->
+    <div class="vital-row status-default" id="row-hr">
+      <div class="vital-label-row">
+        <span class="vital-label">❤️ 맥박 (HR)</span>
+        <span class="vital-range-hint" id="hint-hr">정상: 60~100 회/분</span>
+      </div>
+      <div class="vital-input-row">
+        <input type="range" id="slider-hr" min="20" max="250" value="75" step="1" oninput="syncInput('hr',this.value)">
+        <input type="number" id="input-hr" class="vital-number" value="75" min="20" max="250" oninput="syncSlider('hr',this.value)">
+        <span class="vital-pill pnormal" id="pill-hr">🟢 정상</span>
+      </div>
+    </div>
+
+    <!-- RR -->
+    <div class="vital-row status-default" id="row-rr">
+      <div class="vital-label-row">
+        <span class="vital-label">💨 호흡수 (RR)</span>
+        <span class="vital-range-hint" id="hint-rr">정상: 12~20 회/분</span>
+      </div>
+      <div class="vital-input-row">
+        <input type="range" id="slider-rr" min="4" max="80" value="16" step="1" oninput="syncInput('rr',this.value)">
+        <input type="number" id="input-rr" class="vital-number" value="16" min="4" max="80" oninput="syncSlider('rr',this.value)">
+        <span class="vital-pill pnormal" id="pill-rr">🟢 정상</span>
+      </div>
+    </div>
+
+    <!-- SpO2 -->
+    <div class="vital-row status-default" id="row-spo2">
+      <div class="vital-label-row">
+        <span class="vital-label">🫧 산소포화도 (SpO₂)</span>
+        <span class="vital-range-hint" id="hint-spo2">정상: ≥95%</span>
+      </div>
+      <div class="vital-input-row">
+        <input type="range" id="slider-spo2" min="70" max="100" value="98" step="1" oninput="syncInput('spo2',this.value)">
+        <input type="number" id="input-spo2" class="vital-number" value="98" min="70" max="100" oninput="syncSlider('spo2',this.value)">
+        <span class="vital-pill pnormal" id="pill-spo2">🟢 정상</span>
+      </div>
+    </div>
+
+    <!-- BT -->
+    <div class="vital-row status-default" id="row-bt">
+      <div class="vital-label-row">
+        <span class="vital-label">🌡️ 체온 (BT)</span>
+        <span class="vital-range-hint" id="hint-bt">정상: 36.1~37.2°C</span>
+      </div>
+      <div class="vital-input-row">
+        <input type="range" id="slider-bt" min="34" max="42" value="36.8" step="0.1" oninput="syncInput('bt',this.value)">
+        <input type="number" id="input-bt" class="vital-number" value="36.8" min="34" max="42" step="0.1" oninput="syncSlider('bt',this.value)">
+        <span class="vital-pill pnormal" id="pill-bt">🟢 정상</span>
+      </div>
+    </div>
+
+    <!-- NRS -->
+    <div class="vital-row status-default" id="row-nrs">
+      <div class="vital-label-row">
+        <span class="vital-label">😣 통증 (NRS)</span>
+        <span class="vital-range-hint" id="hint-nrs">0=무통증 / 4-6=중등도 / 7+=심함</span>
+      </div>
+      <div class="nrs-color-bar">
+        <div class="seg-green"></div>
+        <div class="seg-orange"></div>
+        <div class="seg-red"></div>
+      </div>
+      <div class="nrs-labels">
+        <span>0 무통증</span><span>3</span><span>5 중등도</span><span>7</span><span>10 극심</span>
+      </div>
+      <div class="nrs-row">
+        <input type="range" id="slider-nrs" min="0" max="10" value="0" step="1" oninput="syncNrs(this.value)" style="accent-color:var(--primary)">
+        <div class="nrs-value-display lvl-0" id="nrsValueDisplay">0</div>
+      </div>
+      <input type="hidden" id="input-nrs" value="0">
+      <div style="font-size:12px;color:var(--text-sub);margin-top:6px;text-align:center">현재 선택: <strong id="nrsDisplay">0점 — 무통증</strong></div>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="interpretVitals()">📊 활력징후 해석하기</button>
+  </div>
+
+  <!-- Results -->
+  <div id="interpretResult" style="display:none" class="fade-in">
+    <div class="card">
+      <div class="card-title">📋 판정 결과</div>
+      <div class="result-grid" id="resultGrid"></div>
+    </div>
+    <div class="interpretation-box">
+      <div class="interpretation-title">🏥 종합 임상 해석</div>
+      <div class="interpretation-text" id="clinicalText"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">💊 우선 간호중재 (TOP 3)</div>
+      <ul class="intervention-list" id="interventionList"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODE 2: SCENARIO ==================== -->
+<div class="mode" id="mode1">
+
+  <!-- Score Board -->
+  <div class="score-board">
+    <div class="score-item">
+      <div class="score-number" id="totalScore">0</div>
+      <div class="score-label">총 점수</div>
+    </div>
+    <div class="score-item">
+      <div class="score-number" id="correctCount">0</div>
+      <div class="score-label">정답</div>
+    </div>
+    <div class="score-item">
+      <div class="score-number" id="scenarioDone">0/16</div>
+      <div class="score-label">완료</div>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+  <!-- View: Scenario List -->
+  <div id="viewScenarioList">
+    <div class="card">
+      <div class="card-title">🏥 시나리오 선택</div>
+      <div class="scenario-list-grid" id="scenarioListGrid"></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="startRandomScenario()">🎲 랜덤 시나리오 시작</button>
+  </div>
+
+  <!-- View: Scenario Play -->
+  <div id="viewScenarioPlay" style="display:none">
+    <div class="scenario-nav">
+      <button class="scenario-list-btn" onclick="showScenarioList()">← 목록</button>
+      <span class="scenario-counter" id="scenarioCounter">시나리오 1/16</span>
+      <button class="scenario-list-btn" onclick="nextScenario()">다음 →</button>
+    </div>
+
+    <!-- Scenario Info Card -->
+    <div class="scenario-card">
+      <div class="scenario-title" id="scenTitle"></div>
+      <div class="scenario-meta" id="scenMeta"></div>
+      <div class="scenario-desc" id="scenDesc"></div>
+    </div>
+
+    <!-- Vitals Display + Classification -->
+    <div class="card">
+      <div class="card-title">📊 활력징후 — 각 수치를 판정하세요</div>
+      <div class="vitals-display" id="vitalsDisplay"></div>
+      <div style="text-align:center;margin-top:12px">
+        <button class="btn btn-accent" id="submitClassBtn" onclick="checkAllClassifications()">✔ 판정 제출</button>
+        <span style="font-size:12px;color:var(--text-sub);margin-left:10px" id="classProgress">0/7 판정 완료</span>
+      </div>
+    </div>
+
+    <!-- AI Nursing Intervention Input -->
+    <div class="ai-section">
+      <div class="ai-section-title">🤖 AI 채점 — 간호중재 작성 <span style="font-size:11px;font-weight:400;color:var(--text-sub)">(Gemini 2.5 Flash)</span></div>
+      <textarea id="interventionInput" rows="4" placeholder="이 환자에게 필요한 간호중재를 작성하세요.&#10;예: 즉시 산소 투여, 활력징후 15분마다 모니터링, 의사에게 보고..." style="margin-bottom:10px"></textarea>
+      <button class="btn btn-primary btn-sm" onclick="scoreIntervention()" id="aiScoreBtn">🤖 AI 채점 요청</button>
+      <div class="ai-loading" id="aiLoading">⏳ Gemini가 채점 중입니다...</div>
+      <div class="ai-result" id="aiResult"></div>
+    </div>
+
+    <!-- Answer Reveal (hidden until submit) -->
+    <div id="answerReveal" style="display:none" class="fade-in">
+      <div class="interpretation-box">
+        <div class="interpretation-title">🏥 정답 해설</div>
+        <div class="interpretation-text" id="scenInterpretation"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💊 핵심 간호중재</div>
+        <ul class="intervention-list" id="scenInterventions"></ul>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="nextScenario()" style="margin-bottom:16px">다음 시나리오 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODE 3: REFERENCE TABLE ==================== -->
+<div class="mode" id="mode2">
+  <div class="card">
+    <div class="card-title">📊 연령대별 정상 활력징후 기준표</div>
+    <div class="ref-tabs" id="refTabs"></div>
+    <div id="refContents"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔴🟡🟢 판정 기준 안내</div>
+    <table class="ref-table">
+      <tr><th>판정</th><th>기준</th><th>조치</th></tr>
+      <tr><td>🟢 정상</td><td>정상범위 내</td><td>지속 모니터링</td></tr>
+      <tr><td>🟡 경계</td><td>정상범위 ±10% 이내 벗어남</td><td>주의 관찰, 의사 보고 고려</td></tr>
+      <tr><td>🔴 이상</td><td>정상범위 10% 초과 벗어남</td><td>즉각 조치, 의사 보고</td></tr>
+    </table>
+
+    <div class="divider"></div>
+    <div class="card-title" style="font-size:14px">SpO₂ / 체온 특수 기준</div>
+    <table class="ref-table">
+      <tr><th>항목</th><th>정상</th><th>경계</th><th>이상</th></tr>
+      <tr><td>SpO₂ (성인/소아)</td><td>≥95%</td><td>90~94%</td><td>＜90%</td></tr>
+      <tr><td>SpO₂ (노인)</td><td>≥94%</td><td>90~93%</td><td>＜90%</td></tr>
+      <tr><td>체온 (성인)</td><td>36.1~37.2°C</td><td>37.3~37.9°C / 35.5~36.0°C</td><td>≥38.0°C / ≤35.4°C</td></tr>
+      <tr><td>통증 NRS</td><td>0~3 (경미)</td><td>4~6 (중등도)</td><td>7~10 (심함)</td></tr>
+    </table>
+
+    <div class="divider"></div>
+    <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ 인쇄하기</button>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<!-- Footer -->
+<footer>
+  <strong>© 2025 청암대학교 간호학과</strong><br>
+  디지털리터러시와 AI활용 · AI융합 간호정보학
+</footer>
+
+<!-- Settings Modal -->
+<div class="settings-overlay" id="settingsOverlay" onclick="closeSettingsOutside(event)">
+  <div class="settings-modal">
+    <h3>⚙️ Gemini API 설정</h3>
+    <p style="font-size:13px;color:var(--text-sub);margin-bottom:16px;line-height:1.6">
+      간호중재 AI 채점에 사용할 Google Gemini API 키와 모델을 설정합니다.<br>
+      키는 이 기기의 브라우저에만 저장됩니다.
+    </p>
+
+    <!-- API Key -->
+    <div class="form-group">
+      <label class="form-label">🔑 Gemini API Key</label>
+      <div style="position:relative;display:flex;gap:8px;align-items:center">
+        <input type="password" id="apiKeyInput" class="api-key-input"
+               placeholder="AIzaSy..." autocomplete="off"
+               style="flex:1;font-family:monospace;font-size:13px;letter-spacing:0.5px">
+        <button onclick="toggleApiKeyVisibility()" id="toggleKeyBtn"
+                style="padding:10px;background:var(--bg-main);border:1.5px solid var(--border);
+                       border-radius:8px;cursor:pointer;font-size:14px;flex-shrink:0"
+                title="키 표시/숨김">👁</button>
+      </div>
+    </div>
+
+    <!-- Model Selector -->
+    <div class="form-group">
+      <label class="form-label">🤖 Gemini 모델 선택</label>
+      <select id="geminiModelSelect" style="font-size:14px">
+        <optgroup label="✨ 최신 모델 (권장)">
+          <option value="gemini-2.5-flash">Gemini 2.5 Flash ⚡ (권장 · 빠름)</option>
+          <option value="gemini-2.5-pro">Gemini 2.5 Pro 🧠 (최고 성능)</option>
+        </optgroup>
+        <optgroup label="안정 모델">
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+          <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- Connection Test -->
+    <div id="testResultBox" style="display:none;margin-bottom:12px"></div>
+    <button class="btn btn-secondary btn-sm btn-block" onclick="testApiConnection()" id="testBtn"
+            style="margin-bottom:14px">
+      🔌 연결 테스트
+    </button>
+
+    <div style="background:#F0F7F4;border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--text-sub);line-height:1.7">
+      🔒 API 키는 로컬스토리지에만 저장되며 외부 서버로 전송되지 않습니다.<br>
+      📋 키 발급:
+      <a href="https://aistudio.google.com/app/apikey" target="_blank"
+         style="color:var(--primary);font-weight:600;text-decoration:none">
+        Google AI Studio →
+      </a><br>
+      💡 Gemini 2.5 Flash는 무료 할당량이 제공됩니다.
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1" onclick="saveApiKey()">💾 저장</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="closeSettings()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="feedback-overlay" id="feedbackOverlay" onclick="closeFeedbackOutside(event)">
+  <div class="feedback-modal">
+    <h3 id="feedbackTitle">판정 결과</h3>
+    <div id="feedbackContent"></div>
+    <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="closeFeedback()">확인</button>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+
+const normalRanges = {
+  '신생아': { sbp:[60,90], dbp:[30,60], hr:[120,160], rr:[30,60], spo2Min:95, bt:[36.5,37.5] },
+  '영아':   { sbp:[70,100], dbp:[50,70], hr:[100,150], rr:[25,40], spo2Min:95, bt:[36.5,37.5] },
+  '유아':   { sbp:[80,110], dbp:[50,80], hr:[90,130], rr:[20,30], spo2Min:95, bt:[36.5,37.5] },
+  '학령기': { sbp:[85,120], dbp:[55,80], hr:[70,110], rr:[15,25], spo2Min:95, bt:[36.5,37.5] },
+  '청소년': { sbp:[90,130], dbp:[60,85], hr:[60,100], rr:[12,20], spo2Min:95, bt:[36.5,37.5] },
+  '성인':   { sbp:[90,139], dbp:[60,89], hr:[60,100], rr:[12,20], spo2Min:95, bt:[36.1,37.2] },
+  '노인':   { sbp:[90,149], dbp:[60,89], hr:[60,100], rr:[12,20], spo2Min:94, bt:[35.5,37.2] },
+};
+
+const ageLabels = {
+  '신생아':'신생아 (0~28일)','영아':'영아 (1~12개월)','유아':'유아 (1~5세)',
+  '학령기':'학령기 (6~12세)','청소년':'청소년 (13~17세)','성인':'성인 (18~64세)','노인':'노인 (65세+)'
+};
+
+// classify: returns 'normal', 'borderline', 'abnormal'
+function classifyVital(vital, value, ageGroup) {
+  const r = normalRanges[ageGroup];
+  if (vital === 'nrs') {
+    if (value <= 3) return 'normal';
+    if (value <= 6) return 'borderline';
+    return 'abnormal';
+  }
+  if (vital === 'spo2') {
+    const min = r.spo2Min;
+    if (value >= min) return 'normal';
+    if (value >= 90) return 'borderline';
+    return 'abnormal';
+  }
+  if (vital === 'bt') {
+    const [lo, hi] = r.bt;
+    if (value >= lo && value <= hi) return 'normal';
+    const loB = Math.max(lo - 0.8, 34), hiB = hi + 0.8;
+    if (value >= loB && value < lo) return 'borderline';
+    if (value > hi && value <= hiB) return 'borderline';
+    return 'abnormal';
+  }
+  const [lo, hi] = r[vital];
+  if (value >= lo && value <= hi) return 'normal';
+  const loB = lo * 0.9, hiB = hi * 1.1;
+  if (value >= loB && value < lo) return 'borderline';
+  if (value > hi && value <= hiB) return 'borderline';
+  return 'abnormal';
+}
+
+const vitalMeta = {
+  sbp:  { label:'SBP (수축기)', unit:'mmHg', icon:'🩸' },
+  dbp:  { label:'DBP (이완기)', unit:'mmHg', icon:'💧' },
+  hr:   { label:'HR (맥박)',    unit:'회/분', icon:'❤️' },
+  rr:   { label:'RR (호흡수)', unit:'회/분', icon:'💨' },
+  spo2: { label:'SpO₂',        unit:'%',    icon:'🫧' },
+  bt:   { label:'BT (체온)',   unit:'°C',   icon:'🌡️' },
+  nrs:  { label:'NRS (통증)',  unit:'/10',  icon:'😣' },
+};
+
+const statusConfig = {
+  normal:     { label:'정상', icon:'🟢', cls:'normal' },
+  borderline: { label:'경계', icon:'🟡', cls:'borderline' },
+  abnormal:   { label:'이상', icon:'🔴', cls:'abnormal' },
+};
+
+// ===================== SCENARIOS =====================
+
+const scenarios = [
+  {
+    id:0,
+    title:'고혈압 위기',
+    ageGroup:'성인',
+    meta:'성인 여성, 58세 | 갑작스러운 두통, 시야 흐림',
+    desc:'58세 여성이 극심한 두통과 시야 흐림을 호소하며 응급실에 내원. 과거력에 고혈압 있으나 투약 불규칙.',
+    vitals:{ sbp:185, dbp:115, hr:92, rr:18, spo2:96, bt:37.0, nrs:7 },
+    correct:{ sbp:'abnormal', dbp:'abnormal', hr:'normal', rr:'normal', spo2:'normal', bt:'normal', nrs:'abnormal' },
+    interpretation:'수축기 혈압 185mmHg, 이완기 혈압 115mmHg로 고혈압 위기(Hypertensive Crisis) 기준을 초과합니다. 극심한 두통과 시야 흐림은 고혈압성 뇌병증의 징후일 수 있어 즉각적인 의료 개입이 필요합니다.',
+    interventions:['즉시 의사에게 보고하고 항고혈압제 IV 투여 준비','활력징후 5~15분 간격으로 지속 모니터링','침상 안정, 두부 거상 30~45°, 자극 최소화']
+  },
+  {
+    id:1,
+    title:'패혈성 쇼크',
+    ageGroup:'성인',
+    meta:'성인 남성, 45세 | 고열, 저혈압, 빈맥',
+    desc:'45세 남성이 3일 전부터 지속된 고열과 함께 의식 변화로 입원. 소변량 감소, 피부 창백 및 냉습.',
+    vitals:{ sbp:82, dbp:45, hr:128, rr:26, spo2:92, bt:38.9, nrs:6 },
+    correct:{ sbp:'borderline', dbp:'abnormal', hr:'abnormal', rr:'abnormal', spo2:'borderline', bt:'abnormal', nrs:'borderline' },
+    interpretation:'저혈압(SBP 82mmHg), 빈맥(HR 128), 빈호흡(RR 26), 고열(BT 38.9°C), SpO₂ 저하로 패혈성 쇼크 의심 상태입니다. qSOFA 기준 2점 이상으로 중증 패혈증 범주에 해당하며 즉각적인 소생술이 필요합니다.',
+    interventions:['즉시 대량 수액 소생(생리식염수 30mL/kg 30분 내 투여)','혈액배양 2세트 채혈 후 광범위 항생제 투여','고유량 산소 투여, 소변량 30mL/hr 이상 유지 목표']
+  },
+  {
+    id:2,
+    title:'소아 열성 경련',
+    ageGroup:'학령기',
+    meta:'학령기 아동, 6세 남아 | 고열 후 전신 경련',
+    desc:'6세 남아가 어제부터 고열과 함께 오늘 아침 전신 강직-간대 경련 1분간 발생. 현재 경련 소실, 기면 상태.',
+    vitals:{ sbp:100, dbp:65, hr:118, rr:22, spo2:96, bt:39.8, nrs:4 },
+    correct:{ sbp:'normal', dbp:'normal', hr:'borderline', rr:'normal', rr_note:'학령기 정상 15-25, 22는 정상', spo2:'normal', bt:'abnormal', nrs:'borderline' },
+    interpretation:'체온 39.8°C로 고열 상태이며 이로 인한 열성 경련이 발생한 상태입니다. 맥박 118은 학령기 정상(70-110) 상한의 10% 이내(121)로 경계 수준입니다. 고열에 의한 보상성 빈맥 및 경련 후 상태로 판단됩니다.',
+    interventions:['해열제 투여(아세트아미노펜 또는 이부프로펜), 미온수 마사지','경련 재발 대비 diazepam 준비, 안전한 환경 유지','보호자 교육: 경련 시 대처법, 119 신고 기준 안내']
+  },
+  {
+    id:3,
+    title:'신생아 호흡곤란',
+    ageGroup:'신생아',
+    meta:'신생아, 생후 2일 | 빠른 호흡, 청색증',
+    desc:'생후 2일된 신생아가 수유 후 호흡이 빨라지고 口唇部 청색증이 관찰됨. 코뼈 벌렁거림, 흉벽 함몰 소견.',
+    vitals:{ sbp:65, dbp:40, hr:145, rr:72, spo2:88, bt:37.0, nrs:0 },
+    correct:{ sbp:'normal', dbp:'normal', hr:'normal', rr:'abnormal', spo2:'abnormal', bt:'normal', nrs:'normal' },
+    interpretation:'호흡수 72회/분은 신생아 정상(30-60) 상한의 10%를 초과하는 이상 수치입니다. SpO₂ 88%는 신생아 정상(≥95%) 대비 심각한 저하로 저산소증 상태입니다. 신생아 호흡곤란 증후군(RDS) 또는 일과성 빠른 호흡(TTN) 가능성이 높습니다.',
+    interventions:['즉시 산소 투여 및 SpO₂ 95% 이상 유지 목표, 필요 시 CPAP 준비','NICU 전과 준비 및 신생아과 의사 즉시 호출','호흡 상태 지속 모니터링: 코뼈 벌렁거림, 흉벽 함몰, 신음소리 사정']
+  },
+  {
+    id:4,
+    title:'심부전 악화',
+    ageGroup:'노인',
+    meta:'노인, 74세 여성 | 호흡곤란, 하지부종',
+    desc:'74세 여성이 2일 전부터 악화된 호흡곤란과 하지 함요부종으로 입원. 누우면 더 심해지는 기좌호흡(orthopnea) 호소.',
+    vitals:{ sbp:135, dbp:85, hr:95, rr:28, spo2:89, bt:36.8, nrs:4 },
+    correct:{ sbp:'normal', dbp:'normal', hr:'normal', rr:'abnormal', spo2:'abnormal', bt:'normal', nrs:'borderline' },
+    interpretation:'호흡수 28회/분(노인 정상 12-20, 상한 10% 이내 22 초과)으로 빈호흡 상태이며, SpO₂ 89%는 노인 정상(≥94%) 대비 심각하게 낮아 저산소증입니다. 심부전에 의한 폐울혈과 폐부종으로 판단됩니다.',
+    interventions:['좌위 또는 반좌위(30-45° 거상)로 호흡 용이하게 함, 고유량 산소 투여','이뇨제(furosemide) 투여 준비, 수분·전해질 균형 모니터링','일일 체중 측정, 입출량 기록, 폐음 청진 1~2시간마다']
+  },
+  {
+    id:5,
+    title:'저혈당 쇼크',
+    ageGroup:'성인',
+    meta:'성인, 38세 남성 | 의식 변화, 발한, 빈맥',
+    desc:'38세 당뇨 남성이 점심을 거르고 인슐린 투여 후 갑자기 식은땀, 손 떨림, 의식 몽롱함 발생.',
+    vitals:{ sbp:88, dbp:55, hr:118, rr:20, spo2:97, bt:36.5, nrs:3 },
+    correct:{ sbp:'borderline', dbp:'borderline', hr:'abnormal', rr:'normal', spo2:'normal', bt:'normal', nrs:'normal' },
+    interpretation:'SBP 88mmHg는 성인 정상(90-139) 하한의 10% 이내(81-89)로 경계 수준입니다. DBP 55mmHg도 정상(60-89) 하한의 10% 이내(54-59)로 경계입니다. HR 118은 정상 상한(100) 10% 초과(>110)로 이상 수치입니다. 저혈당에 의한 카테콜아민 분비로 빈맥과 저혈압이 발생한 상태입니다.',
+    interventions:['즉시 혈당 측정; 의식 있으면 경구 당분(포도당 15g) 투여, 의식 없으면 50% 포도당 50mL IV 투여','15분 후 혈당 재측정, 80mg/dL 이상 될 때까지 반복','원인 파악(인슐린 용량, 식사 여부) 및 재발 방지 교육']
+  },
+  {
+    id:6,
+    title:'아나필락시스',
+    ageGroup:'청소년',
+    meta:'청소년, 16세 남성 | 벌 쏘임 후 쇼크',
+    desc:'16세 남학생이 벌에 쏘인 후 전신 두드러기와 얼굴 부종, 숨이 막히는 느낌으로 응급실 내원.',
+    vitals:{ sbp:72, dbp:40, hr:138, rr:28, spo2:91, bt:37.2, nrs:8 },
+    correct:{ sbp:'abnormal', dbp:'abnormal', hr:'abnormal', rr:'abnormal', spo2:'borderline', bt:'normal', nrs:'abnormal' },
+    interpretation:'SBP 72mmHg(청소년 정상 하한 90의 10% 미만인 81 이하)로 심각한 저혈압, HR 138(정상 상한 100의 10% 초과)로 빈맥, RR 28(정상 상한 20의 10% 초과 22 초과)으로 심각한 빈호흡 상태입니다. 아나필락틱 쇼크로 즉각적인 에피네프린 투여가 생명을 구합니다.',
+    interventions:['즉시 에피네프린(epinephrine) 0.3mg 근육주사(대퇴 외측부), 필요 시 5-15분마다 반복','앙와위+하지 거상(쇼크 체위), 고유량 산소 투여, IV 접근로 확보 후 생리식염수 수액 빠르게 주입','에피네프린 투여 후에도 호전 없으면 항히스타민제·스테로이드 투여, 기도 확보 준비']
+  },
+  {
+    id:7,
+    title:'정상 성인 케이스',
+    ageGroup:'성인',
+    meta:'성인, 32세 여성 | 건강검진',
+    desc:'32세 건강한 여성의 정기 건강검진. 특별한 증상 없음. 규칙적인 운동과 균형 잡힌 식사 유지 중.',
+    vitals:{ sbp:118, dbp:76, hr:72, rr:16, spo2:98, bt:36.8, nrs:0 },
+    correct:{ sbp:'normal', dbp:'normal', hr:'normal', rr:'normal', spo2:'normal', bt:'normal', nrs:'normal' },
+    interpretation:'모든 활력징후가 성인 정상범위 내에 있습니다. 혈압 118/76mmHg는 정상 혈압 범주이며, 맥박·호흡수·SpO₂·체온 모두 이상 소견 없습니다. 현재 건강 상태 양호하며 지속적인 건강 유지 생활습관을 격려합니다.',
+    interventions:['정기 건강검진 일정 안내(연 1회)','건강한 식이·운동 습관 유지 교육','스트레스 관리 및 수면의 질 향상 방법 안내']
+  },
+  {
+    id:8,
+    title:'정상 소아 케이스',
+    ageGroup:'유아',
+    meta:'유아, 3세 남아 | 정기 영·유아 건강검진',
+    desc:'3세 남아의 영유아 건강검진. 활발하고 식욕 좋음. 예방접종 일정 확인차 방문.',
+    vitals:{ sbp:95, dbp:62, hr:105, rr:24, spo2:98, bt:37.0, nrs:0 },
+    correct:{ sbp:'normal', dbp:'normal', hr:'normal', rr:'normal', spo2:'normal', bt:'normal', nrs:'normal' },
+    interpretation:'유아(1-5세)의 모든 활력징후가 정상범위 내에 있습니다. 혈압 95/62mmHg, 맥박 105회/분(유아 정상 90-130), 호흡수 24회/분(유아 정상 20-30), SpO₂ 98%, 체온 37.0°C 모두 정상 범주입니다.',
+    interventions:['예방접종 일정 확인 및 필요한 접종 실시','성장·발달 사정(체중, 신장, 두위 측정)','보호자 교육: 안전사고 예방, 영양 섭취, 놀이 발달']
+  },
+  {
+    id:9,
+    title:'정상 노인 케이스',
+    ageGroup:'노인',
+    meta:'노인, 70세 남성 | 정기 외래 추적 관찰',
+    desc:'70세 남성, 경도 골관절염으로 정기 외래 방문. 현재 특별한 증상 없음. 약물 복용 순응도 양호.',
+    vitals:{ sbp:138, dbp:78, hr:68, rr:16, spo2:95, bt:36.5, nrs:2 },
+    correct:{ sbp:'normal', dbp:'normal', hr:'normal', rr:'normal', spo2:'normal', bt:'normal', nrs:'normal' },
+    interpretation:'노인(65세+) 정상범위 내 활력징후입니다. SBP 138mmHg는 노인 정상 범주(90-149)에 해당하며, SpO₂ 95%는 노인 기준(≥94%) 내 정상입니다. NRS 2점은 경미한 관절통으로 일상생활 가능 수준입니다.',
+    interventions:['복용 약물 재검토(다약제 복용 위험 사정)','낙상 위험 평가 및 예방 교육','규칙적인 수분 섭취 및 가벼운 운동 권장']
+  },
+  {
+    id:10,
+    title:'수술 후 출혈',
+    ageGroup:'성인',
+    meta:'성인, 52세 여성 | 복부 수술 6시간 후',
+    desc:'52세 여성, 복강경 담낭절제술 6시간 경과. 수술 부위 드레싱에 혈액 삼출 증가, 복통 호소. 피부 창백.',
+    vitals:{ sbp:85, dbp:50, hr:122, rr:24, spo2:94, bt:36.2, nrs:7 },
+    correct:{ sbp:'borderline', dbp:'abnormal', hr:'abnormal', rr:'abnormal', spo2:'borderline', bt:'normal', nrs:'abnormal' },
+    interpretation:'SBP 85mmHg(경계), DBP 50mmHg(정상 60의 10% 미만인 54 이하, 이상), HR 122(>110, 이상), RR 24(>22, 이상)로 수술 후 출혈에 의한 저혈량성 쇼크 초기 소견이 의심됩니다. SpO₂ 94%는 경계 수준입니다.',
+    interventions:['즉시 담당 외과 의사 보고, 활력징후 5분마다 모니터링','IV 접근로 확보(18G 이상) 후 생리식염수 1L 빠르게 주입, 혈액형 검사 및 수혈 준비','수술 부위 드레싱 상태 사정, 복부 진찰, 소변량 측정(카테터 삽입 고려)']
+  },
+  {
+    id:11,
+    title:'COPD 급성 악화',
+    ageGroup:'노인',
+    meta:'노인, 68세 남성 | 만성폐쇄성폐질환 기왕력',
+    desc:'68세 남성 COPD 환자가 3일 전부터 악화된 기침, 가래 증가와 호흡곤란으로 입원. 흡연력 40갑년.',
+    vitals:{ sbp:138, dbp:82, hr:92, rr:26, spo2:88, bt:37.5, nrs:4 },
+    correct:{ sbp:'normal', dbp:'normal', hr:'normal', rr:'abnormal', spo2:'abnormal', bt:'borderline', nrs:'borderline' },
+    interpretation:'RR 26회/분(노인 정상 12-20의 10% 상한 22 초과, 이상)으로 심한 빈호흡 상태입니다. SpO₂ 88%는 정상(≥94%) 대비 심각한 저하로 중증 저산소증입니다. 체온 37.5°C는 노인 정상(≤37.2°C) 초과 경계로 감염성 악화 가능성이 있습니다.',
+    interventions:['통제된 산소 요법: COPD 환자는 SpO₂ 88-92% 목표(고농도 O₂ 투여 시 CO₂ 저류 위험)','기관지 확장제(살부타몰) 네뷸라이저 투여, 전신 스테로이드 투여','Sputum 배양 검사 후 항생제 투여 고려, 호흡 패턴 및 보조호흡근 사용 여부 모니터링']
+  },
+  {
+    id:12,
+    title:'영아 탈수',
+    ageGroup:'영아',
+    meta:'영아, 7개월 여아 | 구토·설사 3일째',
+    desc:'7개월 여아가 3일째 잦은 구토와 설사로 수유량 감소. 기저귀 교환 횟수 현저히 감소, 울어도 눈물 없음.',
+    vitals:{ sbp:65, dbp:48, hr:168, rr:38, spo2:97, bt:38.5, nrs:5 },
+    correct:{ sbp:'borderline', dbp:'borderline', hr:'abnormal', rr:'normal', spo2:'normal', bt:'abnormal', nrs:'borderline' },
+    interpretation:'SBP 65mmHg는 영아 정상 하한(70)의 10% 이내(63-70) 경계, DBP 48mmHg는 정상 하한(50)의 10% 이내(45-50) 경계입니다. HR 168회/분은 영아 정상 상한(150)의 10% 초과(>165)로 이상 수치입니다. 체온 38.5°C는 고열(>38.3°C) 이상 판정입니다. 중증 탈수 및 발열이 동반된 상태입니다.',
+    interventions:['체중 측정으로 탈수 정도 평가, IV 접근로 확보(소아 생리식염수 20mL/kg bolus)','경구 수분 섭취 가능 시 ORS(경구 수분 보충 용액) 소량씩 자주 투여','입출량 기록, 소변량 1mL/kg/hr 이상 유지 목표, 대천문·피부 탄력도 사정']
+  },
+  {
+    id:13,
+    title:'뇌졸중 의심',
+    ageGroup:'성인',
+    meta:'성인, 62세 남성 | 갑작스러운 편측 마비',
+    desc:'62세 남성이 TV 시청 중 갑자기 우측 팔다리 힘이 없어지고 말이 어눌해짐. 증상 발생 1시간 경과.',
+    vitals:{ sbp:178, dbp:102, hr:88, rr:18, spo2:95, bt:37.1, nrs:5 },
+    correct:{ sbp:'abnormal', dbp:'abnormal', hr:'normal', rr:'normal', spo2:'normal', bt:'normal', nrs:'borderline' },
+    interpretation:'SBP 178mmHg는 정상 상한(139)의 10% 초과(>152.9)로 이상 수치입니다. DBP 102mmHg도 정상 상한(89)의 10% 초과(>97.9)로 이상입니다. 뇌졸중 의심 환자에서 급격한 혈압 강하는 뇌 허혈을 악화시킬 수 있어 신중한 관리가 필요합니다.',
+    interventions:['Stroke Code 발동, 즉시 신경과 전문의 호출, NIHSS(뇌졸중 척도) 평가','Brain CT/MRI 즉시 촬영(tPA 투여 가능 여부 확인 - 발증 4.5시간 이내)','활력징후 15분마다 측정, 혈당 측정(저혈당 감별), NPO 유지']
+  },
+  {
+    id:14,
+    title:'당뇨성 케톤산증',
+    ageGroup:'성인',
+    meta:'성인, 28세 여성 | 1형 당뇨 | 구역·복통·빠른 호흡',
+    desc:'28세 1형 당뇨 여성이 인슐린 펌프 오작동 후 구역·구토·복통과 함께 과일 향 나는 호흡으로 응급 내원.',
+    vitals:{ sbp:88, dbp:58, hr:112, rr:28, spo2:96, bt:37.8, nrs:6 },
+    correct:{ sbp:'borderline', dbp:'borderline', hr:'abnormal', rr:'abnormal', spo2:'normal', bt:'borderline', nrs:'borderline' },
+    interpretation:'RR 28회/분(정상 상한 20의 10% 초과 >22)은 케톤산증에 의한 보상성 Kussmaul 호흡으로 이상 수치입니다. HR 112(>110, 이상), SBP 88mmHg(경계), DBP 58mmHg(경계)로 탈수에 의한 혈역학적 불안정 상태입니다. 체온 37.8°C는 경계 수준으로 감염 촉발 가능성을 고려해야 합니다.',
+    interventions:['즉시 혈당·동맥혈가스분석(ABGA)·전해질 검사, IV 생리식염수 보충 시작','인슐린 regular 지속 정주(IV infusion), 혈당이 200mg/dL 되면 포도당 용액으로 전환','시간당 소변량, 혈당, 전해질(특히 K+) 1-2시간마다 모니터링, 저칼륨혈증 예방적 K+ 보충']
+  },
+  {
+    id:15,
+    title:'소아 폐렴',
+    ageGroup:'학령기',
+    meta:'학령기, 10세 여아 | 고열·기침·호흡곤란',
+    desc:'10세 여아가 5일째 지속되는 발열과 기침, 황색 가래, 호흡 시 흉통 호소로 입원. 청진 시 우측 폐 습성 수포음.',
+    vitals:{ sbp:108, dbp:68, hr:118, rr:30, spo2:93, bt:38.6, nrs:4 },
+    correct:{ sbp:'normal', dbp:'normal', hr:'borderline', rr:'abnormal', spo2:'borderline', bt:'abnormal', nrs:'borderline' },
+    interpretation:'RR 30회/분은 학령기 정상 상한(25)의 10% 초과(>27.5)로 이상 수치입니다. SpO₂ 93%는 정상(≥95%) 미만 경계 수준입니다. 체온 38.6°C는 이상 수치로 발열 상태입니다. HR 118은 정상 상한(110)의 10% 이내(121 미만) 경계 수준입니다.',
+    interventions:['산소 투여(SpO₂ 95% 이상 유지 목표), 반좌위 자세로 호흡 용이하게 함','가슴 X-ray, 혈액배양, 객담 배양 검사 시행 후 항생제 투여','6시간마다 해열제 투여, 수분 섭취 권장, 호흡 상태 지속 관찰']
+  }
+];
+
+// ===================== APP STATE =====================
+
+let currentMode = 0;
+let currentScenarioIdx = 0;
+let sessionScore = { total:0, correct:0, wrong:0, done:[] };
+let classificationAnswers = {};
+let geminiApiKey = localStorage.getItem('geminiApiKey') || '';
+let geminiModel  = localStorage.getItem('geminiModel')  || 'gemini-2.5-flash';
+
+// ===================== INIT =====================
+
+document.addEventListener('DOMContentLoaded', () => {
+  initNrsScale();
+  updateRangeHints(); // 슬라이더 구간 색상띠 + 초기 판정 포함
+  buildRefTable();
+  buildScenarioList();
+  loadSessionScore();
+  updateScoreDisplay();
+});
+
+// ===================== TABS =====================
+
+function switchTab(idx) {
+  document.querySelectorAll('.mode').forEach((m,i) => m.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  currentMode = idx;
+}
+
+// ===================== MODE 1 =====================
+
+function syncInput(vital, val) {
+  document.getElementById('input-'+vital).value = val;
+  colorizeVital(vital, parseFloat(val));
+}
+function syncSlider(vital, val) {
+  document.getElementById('slider-'+vital).value = val;
+  colorizeVital(vital, parseFloat(val));
+}
+
+function initNrsScale() {
+  syncNrs(0);
+}
+function syncNrs(val) {
+  val = parseInt(val);
+  document.getElementById('input-nrs').value = val;
+  document.getElementById('slider-nrs').value = val;
+  const labels = ['무통증','거의 없음','경미','경미','중등도','중등도','중등도','심함','심함','극심','극심'];
+  document.getElementById('nrsDisplay').textContent = val+'점 — '+labels[val];
+  const disp = document.getElementById('nrsValueDisplay');
+  disp.textContent = val;
+  disp.className = 'nrs-value-display ' + (val<=3?'lvl-0':val<=6?'lvl-1':'lvl-2');
+  // NRS slider: green → orange → red left-to-right
+  const pct = val / 10 * 100;
+  const color = val<=3?'#66BB6A':val<=6?'#FFA726':'#EF5350';
+  const sliderEl = document.getElementById('slider-nrs');
+  sliderEl.style.background = `linear-gradient(90deg, ${color} ${pct}%, #C8E6D4 ${pct}%)`;
+  sliderEl.style.setProperty('--thumb-color', color);
+  // row + row-nrs colorize
+  applyRowStatus('nrs', val<=3?'normal':val<=6?'borderline':'abnormal');
+}
+
+// ---- 핵심: 슬라이더 트랙에 정상/경계/이상 구간 색상띠 그리기 ----
+function buildSliderGradient(vital, ageGroup) {
+  const slider = document.getElementById('slider-'+vital);
+  if (!slider) return;
+  const min = parseFloat(slider.min);
+  const max = parseFloat(slider.max);
+  const span = max - min;
+  const r = normalRanges[ageGroup];
+
+  function pct(v) { return Math.min(100, Math.max(0, (v - min) / span * 100)).toFixed(2); }
+
+  const C = { normal:'#66BB6A', border:'#FFA726', abnormal:'#EF5350', bg:'#C8E6D4' };
+
+  let grad;
+  if (vital === 'spo2') {
+    const norm = r.spo2Min;        // e.g. 95
+    const borderLo = 90;           // borderline threshold
+    const p1 = pct(borderLo);
+    const p2 = pct(norm);
+    grad = `linear-gradient(90deg,
+      ${C.abnormal} 0%, ${C.abnormal} ${p1}%,
+      ${C.border}   ${p1}%, ${C.border}   ${p2}%,
+      ${C.normal}   ${p2}%, ${C.normal}   100%)`;
+  } else if (vital === 'bt') {
+    const [lo, hi] = r.bt;
+    const loB = (lo - 0.8).toFixed(1);
+    const hiB = (hi + 0.8).toFixed(1);
+    const p1 = pct(loB); const p2 = pct(lo);
+    const p3 = pct(hi);  const p4 = pct(hiB);
+    grad = `linear-gradient(90deg,
+      ${C.abnormal} 0%,   ${C.abnormal} ${p1}%,
+      ${C.border}   ${p1}%, ${C.border}   ${p2}%,
+      ${C.normal}   ${p2}%, ${C.normal}   ${p3}%,
+      ${C.border}   ${p3}%, ${C.border}   ${p4}%,
+      ${C.abnormal} ${p4}%, ${C.abnormal} 100%)`;
+  } else {
+    const [lo, hi] = r[vital];
+    const loB = lo * 0.9; const hiB = hi * 1.1;
+    const p1 = pct(loB); const p2 = pct(lo);
+    const p3 = pct(hi);  const p4 = pct(hiB);
+    grad = `linear-gradient(90deg,
+      ${C.abnormal} 0%,   ${C.abnormal} ${p1}%,
+      ${C.border}   ${p1}%, ${C.border}   ${p2}%,
+      ${C.normal}   ${p2}%, ${C.normal}   ${p3}%,
+      ${C.border}   ${p3}%, ${C.border}   ${p4}%,
+      ${C.abnormal} ${p4}%, ${C.abnormal} 100%)`;
+  }
+  slider.style.background = grad;
+}
+
+// ---- 값에 따라 뱃지·테두리·thumb 색상 업데이트 ----
+function colorizeVital(vital, value) {
+  if (vital === 'nrs') return; // NRS는 syncNrs에서 처리
+  const ag = document.getElementById('ageGroup').value;
+  const status = classifyVital(vital, value, ag);
+  const colorMap = { normal:'#66BB6A', borderline:'#FFA726', abnormal:'#EF5350' };
+  const labelMap = { normal:'🟢 정상', borderline:'🟡 경계', abnormal:'🔴 이상' };
+  const pillClsMap = { normal:'pnormal', borderline:'pborderline', abnormal:'pabnormal' };
+  const numClsMap  = { normal:'status-normal', borderline:'status-borderline', abnormal:'status-abnormal' };
+
+  // pill
+  const pill = document.getElementById('pill-'+vital);
+  if (pill) {
+    pill.textContent = labelMap[status];
+    pill.className = 'vital-pill ' + pillClsMap[status];
+  }
+  // number input border
+  const numEl = document.getElementById('input-'+vital);
+  if (numEl) {
+    numEl.className = 'vital-number ' + numClsMap[status];
+  }
+  // slider thumb color
+  const slider = document.getElementById('slider-'+vital);
+  if (slider) slider.style.setProperty('--thumb-color', colorMap[status]);
+
+  applyRowStatus(vital, status);
+}
+
+function applyRowStatus(vital, status) {
+  const row = document.getElementById('row-'+vital);
+  if (!row) return;
+  row.className = 'vital-row status-' + status;
+}
+
+function colorizeAllVitals() {
+  ['sbp','dbp','hr','rr','spo2','bt'].forEach(v => {
+    const val = parseFloat(document.getElementById('input-'+v).value);
+    colorizeVital(v, val);
+  });
+  const nrsVal = parseInt(document.getElementById('input-nrs').value)||0;
+  syncNrs(nrsVal);
+}
+
+function updateRangeHints() {
+  const ag = document.getElementById('ageGroup').value;
+  const r = normalRanges[ag];
+  document.getElementById('hint-sbp').textContent  = `정상: ${r.sbp[0]}~${r.sbp[1]} mmHg`;
+  document.getElementById('hint-dbp').textContent  = `정상: ${r.dbp[0]}~${r.dbp[1]} mmHg`;
+  document.getElementById('hint-hr').textContent   = `정상: ${r.hr[0]}~${r.hr[1]} 회/분`;
+  document.getElementById('hint-rr').textContent   = `정상: ${r.rr[0]}~${r.rr[1]} 회/분`;
+  document.getElementById('hint-spo2').textContent = `정상: ≥${r.spo2Min}%`;
+  document.getElementById('hint-bt').textContent   = `정상: ${r.bt[0]}~${r.bt[1]}°C`;
+  // 연령대 변경 시 슬라이더 구간 색상띠 + 판정도 갱신
+  ['sbp','dbp','hr','rr','spo2','bt'].forEach(v => buildSliderGradient(v, ag));
+  colorizeAllVitals();
+}
+
+function getInputValues() {
+  return {
+    sbp: parseFloat(document.getElementById('input-sbp').value)||0,
+    dbp: parseFloat(document.getElementById('input-dbp').value)||0,
+    hr:  parseFloat(document.getElementById('input-hr').value)||0,
+    rr:  parseFloat(document.getElementById('input-rr').value)||0,
+    spo2:parseFloat(document.getElementById('input-spo2').value)||0,
+    bt:  parseFloat(document.getElementById('input-bt').value)||0,
+    nrs: parseInt(document.getElementById('input-nrs').value)||0,
+  };
+}
+
+function interpretVitals() {
+  const ag = document.getElementById('ageGroup').value;
+  const v = getInputValues();
+  const vitals = ['sbp','dbp','hr','rr','spo2','bt','nrs'];
+  const results = {};
+  vitals.forEach(vn => results[vn] = classifyVital(vn, v[vn], ag));
+
+  // Build result grid
+  const grid = document.getElementById('resultGrid');
+  grid.innerHTML = '';
+  vitals.forEach(vn => {
+    const st = statusConfig[results[vn]];
+    const vm = vitalMeta[vn];
+    const unit = vn==='spo2'?'%':vn==='bt'?'°C':vm.unit;
+    const displayVal = vn==='bt'?v[vn].toFixed(1):v[vn];
+    grid.innerHTML += `<div class="result-item ${results[vn]}">
+      <div class="result-vital-name">${vm.icon} ${vm.label}</div>
+      <div class="result-vital-value" style="color:${results[vn]==='normal'?'#2E7D32':results[vn]==='borderline'?'#E65100':'#C62828'}">${displayVal}<span style="font-size:12px;font-weight:400"> ${unit}</span></div>
+      <div class="result-vital-status">${st.icon} <strong>${st.label}</strong></div>
+    </div>`;
+  });
+
+  // Clinical interpretation
+  const abnormals = vitals.filter(vn=>results[vn]==='abnormal');
+  const borderlines = vitals.filter(vn=>results[vn]==='borderline');
+  let clinicalText = buildClinicalText(v, results, ag);
+  document.getElementById('clinicalText').textContent = clinicalText;
+
+  // Interventions
+  const interventions = buildInterventions(v, results, ag);
+  const il = document.getElementById('interventionList');
+  il.innerHTML = interventions.slice(0,3).map(i=>`<li>${i}</li>`).join('');
+
+  document.getElementById('interpretResult').style.display = 'block';
+  document.getElementById('interpretResult').scrollIntoView({behavior:'smooth'});
+}
+
+function buildClinicalText(v, results, ag) {
+  const texts = [];
+  const r = normalRanges[ag];
+
+  if (results.sbp==='abnormal') {
+    if (v.sbp > r.sbp[1]*1.1) texts.push(`수축기 혈압 ${v.sbp}mmHg는 고혈압 위기 범위입니다. 즉각적인 의사 보고가 필요합니다.`);
+    else texts.push(`수축기 혈압 ${v.sbp}mmHg는 저혈압 범위입니다. 순환 상태를 확인하세요.`);
+  } else if (results.sbp==='borderline') {
+    if (v.sbp > r.sbp[1]) texts.push(`수축기 혈압 ${v.sbp}mmHg는 정상 상한을 초과한 경계 수치입니다. 주의 관찰이 필요합니다.`);
+    else texts.push(`수축기 혈압 ${v.sbp}mmHg는 정상 하한에 근접한 경계 수치입니다.`);
+  }
+
+  if (results.dbp==='abnormal') {
+    if (v.dbp > r.dbp[1]*1.1) texts.push(`이완기 혈압 ${v.dbp}mmHg는 심각한 고혈압 범위입니다.`);
+    else texts.push(`이완기 혈압 ${v.dbp}mmHg는 저혈압 범위입니다.`);
+  } else if (results.dbp==='borderline') {
+    texts.push(`이완기 혈압 ${v.dbp}mmHg는 경계 수치입니다.`);
+  }
+
+  if (results.hr==='abnormal') {
+    if (v.hr > r.hr[1]*1.1) texts.push(`맥박 ${v.hr}회/분은 빈맥(Tachycardia) 범위입니다. 원인 감별이 필요합니다.`);
+    else texts.push(`맥박 ${v.hr}회/분은 서맥(Bradycardia) 범위입니다. 심장 리듬을 확인하세요.`);
+  } else if (results.hr==='borderline') {
+    texts.push(`맥박 ${v.hr}회/분은 경계 수치입니다.`);
+  }
+
+  if (results.rr==='abnormal') {
+    if (v.rr > r.rr[1]*1.1) texts.push(`호흡수 ${v.rr}회/분은 빈호흡(Tachypnea) 범위입니다. 호흡계 원인을 사정하세요.`);
+    else texts.push(`호흡수 ${v.rr}회/분은 서호흡(Bradypnea) 범위입니다. 기도 상태를 확인하세요.`);
+  } else if (results.rr==='borderline') {
+    texts.push(`호흡수 ${v.rr}회/분은 경계 수치입니다.`);
+  }
+
+  if (results.spo2==='abnormal') {
+    texts.push(`SpO₂ ${v.spo2}%는 저산소증(Hypoxemia) 범위입니다. 즉각적인 산소 투여를 고려하세요.`);
+  } else if (results.spo2==='borderline') {
+    texts.push(`SpO₂ ${v.spo2}%는 정상보다 낮은 경계 수치입니다. 호흡 상태 및 산소 요법을 고려하세요.`);
+  }
+
+  if (results.bt==='abnormal') {
+    const [lo,hi] = r.bt;
+    if (v.bt > hi+0.8) {
+      if (v.bt >= 38.0) texts.push(`체온 ${v.bt}°C는 발열(Fever) 상태입니다. 원인 파악 및 해열 처치가 필요합니다.`);
+    } else {
+      texts.push(`체온 ${v.bt}°C는 저체온증(Hypothermia) 범위입니다. 보온 처치가 필요합니다.`);
+    }
+  } else if (results.bt==='borderline') {
+    if (v.bt > r.bt[1]) texts.push(`체온 ${v.bt}°C는 미열(Low-grade fever) 수준입니다. 지속 관찰이 필요합니다.`);
+    else texts.push(`체온 ${v.bt}°C는 정상 하한에 근접하여 주의 관찰이 필요합니다.`);
+  }
+
+  if (results.nrs==='abnormal') {
+    texts.push(`통증 NRS ${v.nrs}/10은 심한 통증 범위입니다. 즉각적인 통증 관리가 필요합니다.`);
+  } else if (results.nrs==='borderline') {
+    texts.push(`통증 NRS ${v.nrs}/10은 중등도 통증으로 적절한 처치가 필요합니다.`);
+  }
+
+  const allNormal = Object.values(results).every(r=>r==='normal');
+  if (allNormal) {
+    return `모든 활력징후가 ${ageLabels[ag]} 정상범위 내에 있습니다. 현재 활력징후상 즉각적인 처치는 필요하지 않으며, 지속적인 모니터링을 권장합니다.`;
+  }
+  return texts.join(' ');
+}
+
+function buildInterventions(v, results, ag) {
+  const interventions = [];
+  const r = normalRanges[ag];
+
+  if (results.spo2==='abnormal') interventions.unshift('즉시 산소 투여 (비재호흡마스크 또는 비강 캐뉼라), SpO₂ 95% 이상 유지 목표');
+  if (results.sbp==='abnormal' && v.sbp < r.sbp[0]*0.9) interventions.unshift('정맥로 확보 및 수액 투여, 의사에게 즉시 보고');
+  if (results.sbp==='abnormal' && v.sbp > r.sbp[1]*1.1) interventions.unshift('항고혈압제 준비, 의사에게 즉시 보고, 자극 최소화');
+  if (results.hr==='abnormal' && v.hr > r.hr[1]*1.1) interventions.push('심전도 모니터링 적용, 빈맥 원인 감별 (발열·통증·탈수·부정맥)');
+  if (results.hr==='abnormal' && v.hr < r.hr[0]*0.9) interventions.push('심전도 모니터링, 서맥 원인 파악, 응급 약물(atropine) 준비');
+  if (results.rr==='abnormal' && v.rr > r.rr[1]*1.1) interventions.push('호흡 패턴 및 보조호흡근 사용 여부 사정, 산소포화도 지속 모니터링');
+  if (results.bt==='abnormal' && v.bt >= 38.0) interventions.push('해열제 투여, 미온수 마사지, 원인균 배양 검사 시행');
+  if (results.bt==='abnormal' && v.bt < r.bt[0]-0.8) interventions.push('보온 처치 (담요·온열패드), 체온 30분마다 재측정');
+  if (results.nrs==='abnormal') interventions.push('통증 원인 사정, 처방된 진통제 투여 및 비약물적 통증 완화 제공');
+  if (results.spo2==='borderline') interventions.push('산소 투여 고려, 호흡 상태 주의 관찰, 의사에게 보고');
+
+  if (interventions.length === 0) {
+    interventions.push('정기 활력징후 모니터링 지속 (입원 환자: 4-8시간마다)');
+    interventions.push('환자 교육: 불편감 발생 시 즉시 알릴 것');
+    interventions.push('식이, 수분 섭취, 활동 수준 평가');
+  }
+  return interventions.slice(0,3);
+}
+
+// ===================== MODE 2 =====================
+
+function buildScenarioList() {
+  const grid = document.getElementById('scenarioListGrid');
+  grid.innerHTML = '';
+  scenarios.forEach((s,i)=>{
+    const done = sessionScore.done.includes(i);
+    grid.innerHTML += `<div class="scenario-list-item ${done?'done':''}" onclick="startScenario(${i})">
+      <span class="s-badge" style="background:${done?'#C8E6C9':'#E3F2FD'};color:${done?'#2E7D32':'#1565C0'}">${done?'✓완료':'시작'}</span>
+      <div class="s-title">${s.title}</div>
+      <div class="s-meta">${s.ageGroup} · ${s.meta.split('|')[1]?.trim()||''}</div>
+    </div>`;
+  });
+}
+
+function startScenario(idx) {
+  currentScenarioIdx = idx;
+  classificationAnswers = {};
+  document.getElementById('viewScenarioList').style.display = 'none';
+  document.getElementById('viewScenarioPlay').style.display = 'block';
+  document.getElementById('answerReveal').style.display = 'none';
+  document.getElementById('interventionInput').value = '';
+  document.getElementById('aiResult').className = 'ai-result';
+  renderScenario(idx);
+}
+
+function showScenarioList() {
+  document.getElementById('viewScenarioList').style.display = 'block';
+  document.getElementById('viewScenarioPlay').style.display = 'none';
+  buildScenarioList();
+}
+
+function startRandomScenario() {
+  const undone = scenarios.map((_,i)=>i).filter(i=>!sessionScore.done.includes(i));
+  const pool = undone.length > 0 ? undone : scenarios.map((_,i)=>i);
+  startScenario(pool[Math.floor(Math.random()*pool.length)]);
+  switchTab(1);
+}
+
+function nextScenario() {
+  const next = (currentScenarioIdx+1)%scenarios.length;
+  startScenario(next);
+}
+
+function renderScenario(idx) {
+  const s = scenarios[idx];
+  document.getElementById('scenTitle').textContent = s.title;
+  document.getElementById('scenMeta').textContent = s.meta;
+  document.getElementById('scenDesc').textContent = s.desc;
+  document.getElementById('scenarioCounter').textContent = `시나리오 ${idx+1}/${scenarios.length}`;
+
+  const vDisplay = document.getElementById('vitalsDisplay');
+  const vKeys = ['sbp','dbp','hr','rr','spo2','bt','nrs'];
+  const units = {sbp:'mmHg',dbp:'mmHg',hr:'회/분',rr:'회/분',spo2:'%',bt:'°C',nrs:'/10'};
+  vDisplay.innerHTML = '';
+  vKeys.forEach(vk => {
+    const val = s.vitals[vk];
+    const vm = vitalMeta[vk];
+    const displayVal = vk==='bt' ? val.toFixed(1) : val;
+    vDisplay.innerHTML += `<div class="vital-card" id="vc-${vk}">
+      <div class="vital-card-name">${vm.icon} ${vm.label}</div>
+      <div class="vital-card-value">${displayVal}</div>
+      <div class="vital-card-unit">${units[vk]}</div>
+      <div class="classification-btns">
+        <button class="cls-btn normal" onclick="selectClassification('${vk}','normal',this)">🟢정상</button>
+        <button class="cls-btn borderline" onclick="selectClassification('${vk}','borderline',this)">🟡경계</button>
+        <button class="cls-btn abnormal" onclick="selectClassification('${vk}','abnormal',this)">🔴이상</button>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('submitClassBtn').disabled = false;
+  updateClassProgress();
+}
+
+function selectClassification(vk, status, btn) {
+  const card = document.getElementById('vc-'+vk);
+  card.querySelectorAll('.cls-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  classificationAnswers[vk] = status;
+  card.className = `vital-card answered-${status}`;
+  updateClassProgress();
+}
+
+function updateClassProgress() {
+  const count = Object.keys(classificationAnswers).length;
+  document.getElementById('classProgress').textContent = `${count}/7 판정 완료`;
+}
+
+function checkAllClassifications() {
+  const s = scenarios[currentScenarioIdx];
+  const vKeys = ['sbp','dbp','hr','rr','spo2','bt','nrs'];
+  let correct = 0, wrong = 0, unanswered = [];
+
+  vKeys.forEach(vk => {
+    if (!classificationAnswers[vk]) { unanswered.push(vk); return; }
+    const isCorrect = classificationAnswers[vk] === s.correct[vk];
+    if (isCorrect) correct++;
+    else wrong++;
+
+    const card = document.getElementById('vc-'+vk);
+    const selectedBtn = card.querySelector(`.cls-btn.${classificationAnswers[vk]}`);
+    if (selectedBtn) {
+      selectedBtn.classList.add(isCorrect?'correct':'incorrect');
+    }
+    // Show correct answer visually
+    if (!isCorrect) {
+      const correctBtn = card.querySelector(`.cls-btn.${s.correct[vk]}`);
+      if (correctBtn) {
+        correctBtn.style.outline = '3px solid #2E7D52';
+        correctBtn.style.boxShadow = '0 0 0 3px rgba(46,125,82,0.3)';
+      }
+    }
+  });
+
+  if (unanswered.length > 0) {
+    showFeedback('미완성', `아직 ${unanswered.length}개 항목을 판정하지 않았습니다.<br>모든 활력징후를 판정해 주세요.`, false);
+    return;
+  }
+
+  const points = correct * 10;
+  sessionScore.total += points;
+  sessionScore.correct += correct;
+  sessionScore.wrong += wrong;
+  if (!sessionScore.done.includes(currentScenarioIdx)) sessionScore.done.push(currentScenarioIdx);
+
+  saveSessionScore();
+  updateScoreDisplay();
+
+  // Show interpretation
+  const scenInterpEl = document.getElementById('scenInterpretation');
+  scenInterpEl.textContent = s.interpretation;
+  const il = document.getElementById('scenInterventions');
+  il.innerHTML = s.interventions.map(i=>`<li>${i}</li>`).join('');
+  document.getElementById('answerReveal').style.display = 'block';
+  document.getElementById('submitClassBtn').disabled = true;
+  document.getElementById('answerReveal').scrollIntoView({behavior:'smooth'});
+
+  // Show result modal
+  const pct = Math.round(correct/vKeys.length*100);
+  const emoji = pct>=80?'🎉':pct>=50?'👍':'📚';
+  showFeedback(`판정 결과 ${emoji}`,
+    `<div style="font-size:32px;font-weight:800;color:${pct>=80?'#2E7D32':pct>=50?'#E65100':'#C62828'};margin-bottom:8px">${correct}/${vKeys.length} 정답</div>
+    <div style="margin-bottom:12px;color:var(--text-sub)">${points}점 획득</div>
+    <div class="alert alert-${pct>=80?'success':pct>=50?'warning':'danger'}">${pct>=80?'훌륭합니다! 활력징후 판정 능력이 우수합니다.':pct>=50?'잘 하셨습니다. 틀린 항목을 복습해 보세요.':'다시 한번 정상범위 기준표를 확인해 보세요.'}</div>`, true);
+}
+
+function showFeedback(title, html, isResult) {
+  document.getElementById('feedbackTitle').textContent = title;
+  document.getElementById('feedbackContent').innerHTML = html;
+  document.getElementById('feedbackOverlay').classList.add('show');
+}
+function closeFeedback() { document.getElementById('feedbackOverlay').classList.remove('show'); }
+function closeFeedbackOutside(e) { if(e.target===document.getElementById('feedbackOverlay')) closeFeedback(); }
+
+// ===================== SCORE =====================
+
+function updateScoreDisplay() {
+  document.getElementById('totalScore').textContent = sessionScore.total;
+  document.getElementById('correctCount').textContent = sessionScore.correct;
+  document.getElementById('scenarioDone').textContent = sessionScore.done.length+'/'+scenarios.length;
+  document.getElementById('headerScore').textContent = '점수: '+sessionScore.total;
+  const pct = Math.round(sessionScore.done.length/scenarios.length*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+}
+
+function saveSessionScore() { localStorage.setItem('vsTrainerScore', JSON.stringify(sessionScore)); }
+function loadSessionScore() {
+  const saved = localStorage.getItem('vsTrainerScore');
+  if (saved) { try { sessionScore = JSON.parse(saved); } catch(e){} }
+}
+
+// ===================== AI SCORING =====================
+
+async function scoreIntervention() {
+  const text = document.getElementById('interventionInput').value.trim();
+  if (!text) { alert('간호중재를 먼저 작성해 주세요.'); return; }
+  if (!geminiApiKey) { openSettings(); return; }
+
+  const s = scenarios[currentScenarioIdx];
+  const prompt = `당신은 간호학 교수입니다. 간호학과 학생이 아래 임상 시나리오에 대해 작성한 간호중재를 채점해 주세요.
+
+[시나리오]
+제목: ${s.title}
+환자 정보: ${s.meta}
+상황: ${s.desc}
+활력징후: SBP ${s.vitals.sbp}mmHg, DBP ${s.vitals.dbp}mmHg, HR ${s.vitals.hr}회/분, RR ${s.vitals.rr}회/분, SpO2 ${s.vitals.spo2}%, BT ${s.vitals.bt}°C, NRS ${s.vitals.nrs}/10
+
+[모범 간호중재]
+${s.interventions.join(', ')}
+
+[학생 작성 간호중재]
+${text}
+
+다음 형식으로 한국어로 응답해 주세요:
+점수: XX/100
+
+[잘한 점]
+• (2-3가지 구체적 피드백)
+
+[보완할 점]
+• (2-3가지 구체적 피드백)
+
+[임상적 조언]
+(1-2문장의 핵심 조언)`;
+
+  const aiResultEl = document.getElementById('aiResult');
+  const aiLoadingEl = document.getElementById('aiLoading');
+  aiLoadingEl.className = 'ai-loading show';
+  aiResultEl.className = 'ai-result';
+  document.getElementById('aiScoreBtn').disabled = true;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiApiKey}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        contents:[{parts:[{text:prompt}]}],
+        generationConfig:{temperature:0.7,maxOutputTokens:1024}
+      })
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(()=>({}));
+      throw new Error(errData?.error?.message || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || '응답을 받지 못했습니다.';
+
+    // Extract score
+    const scoreMatch = reply.match(/점수:\s*(\d+)/);
+    const score = scoreMatch ? parseInt(scoreMatch[1]) : null;
+    const scoreColor = score >= 80 ? '#2E7D32' : score >= 60 ? '#E65100' : '#C62828';
+    const scoreHtml = score !== null ? `<div class="ai-score-badge" style="background:${scoreColor}20;color:${scoreColor};border:2px solid ${scoreColor}">${score}점 / 100</div>` : '';
+
+    aiResultEl.innerHTML = scoreHtml + '<div style="white-space:pre-wrap;font-size:13px;line-height:1.7">' + reply.replace(/점수:\s*\d+\/100\n?/,'').trim() + '</div>';
+    aiResultEl.className = 'ai-result show';
+  } catch(err) {
+    aiResultEl.innerHTML = `<div class="alert alert-danger">⚠️ AI 채점 오류: ${err.message}<br>API 키를 확인하거나 잠시 후 다시 시도해 주세요.</div>`;
+    aiResultEl.className = 'ai-result show';
+  } finally {
+    aiLoadingEl.className = 'ai-loading';
+    document.getElementById('aiScoreBtn').disabled = false;
+  }
+}
+
+// ===================== SETTINGS =====================
+
+function openSettings() {
+  document.getElementById('apiKeyInput').value = geminiApiKey;
+  document.getElementById('geminiModelSelect').value = geminiModel;
+  document.getElementById('testResultBox').style.display = 'none';
+  document.getElementById('settingsOverlay').classList.add('show');
+}
+function closeSettings() { document.getElementById('settingsOverlay').classList.remove('show'); }
+function closeSettingsOutside(e) { if(e.target===document.getElementById('settingsOverlay')) closeSettings(); }
+
+function toggleApiKeyVisibility() {
+  const inp = document.getElementById('apiKeyInput');
+  const btn = document.getElementById('toggleKeyBtn');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+async function testApiConnection() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  const model = document.getElementById('geminiModelSelect').value;
+  const box = document.getElementById('testResultBox');
+  const btn = document.getElementById('testBtn');
+  if (!key) { box.innerHTML='<div class="alert alert-warning">⚠️ API 키를 먼저 입력해 주세요.</div>'; box.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = '⏳ 테스트 중...';
+  box.style.display = 'none';
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contents:[{parts:[{text:'안녕하세요. 한 단어로만 대답하세요: 연결이 되었나요?'}]}], generationConfig:{maxOutputTokens:20} })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || '응답 수신됨';
+      box.innerHTML = `<div class="alert alert-success">✅ 연결 성공! 모델: <strong>${model}</strong><br>응답: "${reply.trim()}"</div>`;
+    } else {
+      const err = await res.json().catch(()=>({}));
+      box.innerHTML = `<div class="alert alert-danger">❌ 연결 실패 (${res.status})<br>${err?.error?.message||'API 키 또는 모델을 확인해 주세요.'}</div>`;
+    }
+  } catch(e) {
+    box.innerHTML = `<div class="alert alert-danger">❌ 네트워크 오류: ${e.message}</div>`;
+  }
+  box.style.display = 'block';
+  btn.disabled = false; btn.textContent = '🔌 연결 테스트';
+}
+
+function saveApiKey() {
+  const key   = document.getElementById('apiKeyInput').value.trim();
+  const model = document.getElementById('geminiModelSelect').value;
+  geminiApiKey = key;
+  geminiModel  = model;
+  localStorage.setItem('geminiApiKey', key);
+  localStorage.setItem('geminiModel',  model);
+  closeSettings();
+  const msg = document.createElement('div');
+  msg.className = 'alert alert-success';
+  msg.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:500;min-width:240px;text-align:center;font-size:14px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.15)';
+  msg.innerHTML = `✅ 저장 완료<br><span style="font-size:12px;font-weight:400">${model}</span>`;
+  document.body.appendChild(msg);
+  setTimeout(()=>msg.remove(), 2800);
+}
+
+// ===================== REFERENCE TABLE =====================
+
+function buildRefTable() {
+  const ageGroups = Object.keys(normalRanges);
+  const refTabs = document.getElementById('refTabs');
+  const refContents = document.getElementById('refContents');
+
+  ageGroups.forEach((ag,i) => {
+    const r = normalRanges[ag];
+    refTabs.innerHTML += `<button class="ref-tab ${i===0?'active':''}" onclick="switchRefTab(${i})">${ag}</button>`;
+
+    const rows = [
+      ['🩸 수축기 혈압 (SBP)', r.sbp[0]+' ~ '+r.sbp[1]+' mmHg', (r.sbp[0]*0.9).toFixed(0)+'~'+(r.sbp[1]*1.1).toFixed(0)+' (경계)'],
+      ['💧 이완기 혈압 (DBP)', r.dbp[0]+' ~ '+r.dbp[1]+' mmHg', (r.dbp[0]*0.9).toFixed(0)+'~'+(r.dbp[1]*1.1).toFixed(0)+' (경계)'],
+      ['❤️ 맥박 (HR)',          r.hr[0]+' ~ '+r.hr[1]+' 회/분',   (r.hr[0]*0.9).toFixed(0)+'~'+(r.hr[1]*1.1).toFixed(0)+' (경계)'],
+      ['💨 호흡수 (RR)',        r.rr[0]+' ~ '+r.rr[1]+' 회/분',   (r.rr[0]*0.9).toFixed(0)+'~'+(r.rr[1]*1.1).toFixed(0)+' (경계)'],
+      ['🫧 SpO₂',               '≥ '+r.spo2Min+' %',               '90~'+(r.spo2Min-1)+'% (경계) / <90% (이상)'],
+      ['🌡️ 체온 (BT)',         r.bt[0]+' ~ '+r.bt[1]+' °C',       (r.bt[0]-0.8).toFixed(1)+'~'+(r.bt[1]+0.8).toFixed(1)+' (경계)'],
+      ['😣 NRS 통증',           '0 ~ 3 (경미)',                     '4~6 (중등도) / 7~10 (심함)'],
+    ];
+
+    refContents.innerHTML += `<div class="ref-content ${i===0?'active':''}" id="ref-content-${i}">
+      <div style="font-size:14px;font-weight:700;color:var(--primary-dark);margin-bottom:10px;padding:8px 12px;background:var(--bg-main);border-radius:8px">${ageLabels[ag]}</div>
+      <div style="overflow-x:auto">
+      <table class="ref-table">
+        <tr><th>활력징후</th><th>🟢 정상 범위</th><th>🟡 경계 / 🔴 이상 기준</th></tr>
+        ${rows.map(row=>`<tr><td class="highlight">${row[0]}</td><td>${row[1]}</td><td style="font-size:12px;color:var(--text-sub)">${row[2]}</td></tr>`).join('')}
+      </table>
+      </div>
+      <div class="alert alert-info" style="margin-top:12px;font-size:12px">
+        💡 경계값 기준: 정상 상한의 10% 초과 또는 하한의 10% 미만 (SpO₂·체온·NRS는 임상 기준 적용)
+      </div>
+    </div>`;
+  });
+}
+
+function switchRefTab(idx) {
+  document.querySelectorAll('.ref-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  document.querySelectorAll('.ref-content').forEach((c,i)=>c.classList.toggle('active',i===idx));
+}
+</script>
+</body>
+</html>
